@@ -119,9 +119,82 @@ struct Person {
 
 };
 
+class MysqlHelper {
 
-constexpr int a = 10;
-constexpr const int *pa = &a;
+public:
+	MysqlHelper(
+		const string &dbuser = "ning", 
+		const string &dbpasswd = "2012", 
+		const string &dbip = "localhost",
+		const string &dbname = "server") {
+		con = mysql_init((MYSQL*)0);
+		if (con != NULL && mysql_real_connect(con, dbip.c_str(), dbuser.c_str(), dbpasswd.c_str(), dbname.c_str(), 3306/*TCP IP端口*/, NULL/*Unix Socket 连接类型*/, 0/*运行成ODBC数据库标志*/))
+		{
+			std::cout << "connect db ok!" << endl;
+		}
+		else
+		{
+			std::cout << "connect database error" << endl;
+		}
+
+	}
+
+	~MysqlHelper() {
+
+		mysql_close(con);
+
+		std::cout << "disconnect db ok" << endl;
+	}
+
+
+	int createTable(const string &sql)
+	{
+
+		if (mysql_query(con, sql.c_str()))
+		{
+			cout << "create table already exists\n" << endl;
+			return -1;
+		}
+		return 0;
+	}
+
+
+	int insertItem(const string &sql)
+	{
+		if (mysql_query(con, sql.c_str()))
+		{
+			cout << "insert item error\n" << endl;
+			return -1;
+		}
+		return 0;
+	}
+
+
+	MYSQL_FIELD
+
+
+private:
+
+	MYSQL *con;
+
+};
+
+
+void test()
+{
+	MysqlHelper *sqlh = new MysqlHelper();
+
+	sqlh->createTable("CREATE TABLE `USER` (\
+						`ID` int(11) NOT NULL auto_increment,\
+						`USER_NAME` tinytext,\
+						`USER_PWD` tinytext,\
+						PRIMARY KEY  (`ID`)\
+					)");
+
+
+	delete sqlh;
+
+}
 
 
 int main()
@@ -130,56 +203,13 @@ int main()
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 
-	char tmp[400];
-	//database configuartion
-	char dbuser[30] = "ning";
-	char dbpasswd[30] = "2012";
-	char dbip[30] = "localhost";
-	char dbname[50] = "server";
-	char tablename[50] = "test";
-	char *query = NULL;
-
-	int x;
-	int y;
-	int rt;//return value
-	unsigned int t;
-
-	int count = 0;
-
-	printf("input x,y\n");
-	scanf_s("%d,%d", &x, &y);
-	fflush(stdin);
-	printf("input over\n");
-	con = mysql_init((MYSQL*)0);
+	
 
 
-	if (con != NULL && mysql_real_connect(con, dbip, dbuser, dbpasswd, dbname, 3306/*TCP IP端口*/, NULL/*Unix Socket 连接类型*/, 0/*运行成ODBC数据库标志*/))
-	{
-		if (!mysql_select_db(con, dbname))
-		{
-			printf("Select successfully the database!\n");
+		test();
+	
 
-			con->reconnect = 1;
 
-			query = "set names \'GBK\'";
-					//mysql_query(con,"set names \'GBK\'"); 
-			rt = mysql_real_query(con, query, strlen(query));
-			if (rt)
-			{
-					printf("Error making query: %s !!!\n", mysql_error(con));
-			}
-			else
-			{
-				printf("query %s succeed!\n", query);
-			}
-
-		}
-	}
-	else
-	{
-		MessageBoxA(NULL, "Unable to connect the database,check your configuration!", "", NULL);
-
-	}
 
 
 
