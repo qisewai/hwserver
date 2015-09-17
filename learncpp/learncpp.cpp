@@ -4,14 +4,19 @@
 #include "stdafx.h"
 #include <iostream>
 #include <string>
+#include <vector>
+#include <map>
 #include "Screen.h"
 #include "mysql.h" 
-
+#include "mysql_helper.h"
+#include "tcp_server.h"
 
 using std::cout;
 using std::cin;
 using std::endl;
 using std::string;
+using std::vector;
+using std::map;
 
 
 
@@ -119,99 +124,55 @@ struct Person {
 
 };
 
-class MysqlHelper {
 
-public:
-	MysqlHelper(
-		const string &dbuser = "ning", 
-		const string &dbpasswd = "2012", 
-		const string &dbip = "localhost",
-		const string &dbname = "server") {
-		con = mysql_init((MYSQL*)0);
-		if (con != NULL && mysql_real_connect(con, dbip.c_str(), dbuser.c_str(), dbpasswd.c_str(), dbname.c_str(), 3306/*TCP IP端口*/, NULL/*Unix Socket 连接类型*/, 0/*运行成ODBC数据库标志*/))
-		{
-			std::cout << "connect db ok!" << endl;
-		}
-		else
-		{
-			std::cout << "connect database error" << endl;
-		}
-
-	}
-
-	~MysqlHelper() {
-
-		mysql_close(con);
-
-		std::cout << "disconnect db ok" << endl;
-	}
-
-
-	int createTable(const string &sql)
-	{
-
-		if (mysql_query(con, sql.c_str()))
-		{
-			cout << "create table already exists\n" << endl;
-			return -1;
-		}
-		return 0;
-	}
-
-
-	int insertItem(const string &sql)
-	{
-		if (mysql_query(con, sql.c_str()))
-		{
-			cout << "insert item error\n" << endl;
-			return -1;
-		}
-		return 0;
-	}
-
-
-	MYSQL_FIELD
-
-
-private:
-
-	MYSQL *con;
-
-};
 
 
 void test()
 {
-	MysqlHelper *sqlh = new MysqlHelper();
+	MysqlHelper *db = new MysqlHelper();
 
-	sqlh->createTable("CREATE TABLE `USER` (\
-						`ID` int(11) NOT NULL auto_increment,\
-						`USER_NAME` tinytext,\
-						`USER_PWD` tinytext,\
-						PRIMARY KEY  (`ID`)\
+	db->createTable("CREATE TABLE `user` (\
+						`id` int(11) NOT NULL auto_increment,\
+						`user_name` tinytext,\
+						`user_pwd` tinytext,\
+						PRIMARY KEY  (`id`)\
 					)");
 
+	// insert
+	db->insertItem("insert into user (user_name, user_pwd)values('qisewai', '881109')");
 
-	delete sqlh;
+	vector<map<string, string>> query_res;
+	query_res = db->queryItems("select * from user where user_name = 'qisewai'");
+
+	cout << "the query result size is" << query_res.size() << endl;
+	cout << "the user name is " << query_res[0]["user_name"] << endl;
+
+	delete db;
+
+}
+
+
+void test_net()
+{
+	TcpServer *server = new TcpServer();
+
+
+	server->Run();
+
+
+	delete server;
 
 }
 
 
 int main()
 {
-	MYSQL * con; 
-	MYSQL_RES *res;
-	MYSQL_ROW row;
+
 
 	
 
-
-		test();
-	
-
-
-
-
+//	test();
+	test_net();
 
 	string s1;
 	string s2(s1);

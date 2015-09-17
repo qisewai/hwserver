@@ -27,6 +27,15 @@
     <ClInclude Include="Screen.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="mysql_helper.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tcp_server.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tcp_client.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -36,6 +45,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Screen.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="mysql_helper.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tcp_server.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tcp_client.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
